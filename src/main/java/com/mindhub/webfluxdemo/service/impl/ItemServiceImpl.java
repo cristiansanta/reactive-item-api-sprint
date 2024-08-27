@@ -20,7 +20,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public Mono<Item> getItemById(Long id) {
         return itemRepository.findById(id)
-                .switchIfEmpty(Mono.error(new NotFoundException(id)));
+                .switchIfEmpty(Mono.error(new NotFoundException("Item with ID " + id + " not found")));
     }
 
     @Override
@@ -40,13 +40,18 @@ public class ItemServiceImpl implements ItemService {
                     existingItem.setName(item.getName());
                     return itemRepository.save(existingItem);
                 })
-                .switchIfEmpty(Mono.error(new NotFoundException(id)));
+                .switchIfEmpty(Mono.error(new NotFoundException("Item with ID " + id + " not found")));
     }
 
     @Override
     public Mono<Void> deleteItem(Long id) {
-        return itemRepository.findById(id)
-                .flatMap(item -> itemRepository.delete(item))
-                .switchIfEmpty(Mono.error(new NotFoundException(id)));
+        return itemRepository.existsById(id)
+                .flatMap(exists -> {
+                    if (exists) {
+                        return itemRepository.deleteById(id);
+                    } else {
+                        return Mono.error(new NotFoundException("Item with ID " + id + " not found"));
+                    }
+                });
     }
 }

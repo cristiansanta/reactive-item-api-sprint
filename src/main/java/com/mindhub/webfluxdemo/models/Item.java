@@ -10,7 +10,7 @@ public class Item {
     private Long id;
     private String name;
 
-    // Constructors, getters, and setters
+
     public Item() {}
 
     public Item(Long id, String name) {
@@ -18,7 +18,7 @@ public class Item {
         this.name = name;
     }
 
-    // Getters and setters
+
     public Long getId() {
         return id;
     }
